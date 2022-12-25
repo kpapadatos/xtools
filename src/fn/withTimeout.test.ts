@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import sleep from './sleep';
-import withTimeout, { TimeoutError } from './withTimeout';
+import { sleep } from './sleep';
+import { TimeoutError, withTimeout } from './withTimeout';
 
 describe('withTimeout', () => {
     it('should complete before timeout', async () => {

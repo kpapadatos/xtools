@@ -1,6 +1,6 @@
 import { defer } from './defer';
 
-export default async function withTimeout<T>(fn: AsyncFunction<T>, options: IWithTimeoutOptions) {
+export async function withTimeout<T>(fn: AsyncFunction<T>, options: IWithTimeoutOptions) {
     return await WithTimeout.execute(fn, options);
 }
 
