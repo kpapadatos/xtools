@@ -4,7 +4,7 @@ export async function withTimeout<T>(fn: AsyncFunction<T>, options: IWithTimeout
     return await WithTimeout.execute(fn, options);
 }
 
-export class TimeoutError extends Error { public constructor() { super('Operation timed out.') } }
+export class TimeoutError extends Error { public constructor() { super('Operation timed out.'); } }
 
 type AsyncFunction<T> = (...args: any[]) => Promise<T>;
 
