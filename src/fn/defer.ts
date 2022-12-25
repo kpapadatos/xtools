@@ -2,7 +2,7 @@ export function defer<T>() {
     return new DeferredPromise<T>();
 }
 
-class DeferredPromise<T> {
+export class DeferredPromise<T> {
     public readonly promise: Promise<T>;
     public isFinished = false;
     private promiseResolve: (value: T) => void = () => undefined;
