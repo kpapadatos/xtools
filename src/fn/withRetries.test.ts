@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { withRetries } from './withRetries';
+import { FatalError, withRetries } from './withRetries';
 
 describe('withRetries', () => {
     it('should retry 3 times and error', async () => {
@@ -40,5 +40,16 @@ describe('withRetries', () => {
 
         assert.equal(tries, 4);
         assert.equal(result, 15);
+    });
+    it('should not retry on fatal error', async () => {
+        let tries = 0;
+
+        const error = await withRetries(async () => {
+            tries++;
+            throw new FatalError();
+        }, { retries: 1 }).catch(e => e);
+
+        assert.equal(tries, 1);
+        assert.instanceOf(error, FatalError);
     });
 });

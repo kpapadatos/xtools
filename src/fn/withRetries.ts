@@ -27,10 +27,18 @@ export async function withRetries<T extends (...args: any) => any>(
         lastError = result;
         options.onError?.(lastError);
 
+        if (result instanceof FatalError) {
+            break;
+        }
+
         await waitForRetryInterval(tries, options.retries, options.retryIntervalMultiplier);
     }
 
     throw lastError;
+}
+
+export class FatalError extends Error {
+    public constructor(message?: string | undefined, options?: ErrorOptions | undefined) { super(message, options); }
 }
 
 async function tryTask(
