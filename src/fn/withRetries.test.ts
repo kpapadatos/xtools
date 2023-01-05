@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import withRetries from './withRetries';
+import { withRetries } from './withRetries';
 
 describe('withRetries', () => {
     it('should retry 3 times and error', async () => {

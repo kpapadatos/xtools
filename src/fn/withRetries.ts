@@ -8,7 +8,7 @@ const defaultOptions: IWithRetriesOptions = {
     retryIntervalMultiplier: 100
 };
 
-export default async function withRetries<T extends (...args: any) => any>(
+export async function withRetries<T extends (...args: any) => any>(
     task: T,
     partialOptions: Partial<IWithRetriesOptions> = {}
 ): Promise<AsyncReturnType<typeof task>> {
