@@ -20,13 +20,13 @@ export class JSONLogger extends Logger {
     public info(input: any) { console.info(this.stringify(input)); }
     private stringify(input: any) {
         if (typeof input === 'string') {
-            input = { msg: input };
+            input = { m: input };
         }
 
         if (this.options.useDefaultFields) {
             input = {
-                msg: input.message,
-                ts: new Date(),
+                m: input.message,
+                t: new Date(),
                 stack: input.stack,
                 ...input
             };
