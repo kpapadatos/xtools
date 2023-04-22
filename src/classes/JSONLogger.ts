@@ -3,7 +3,9 @@ import { Logger } from './Logger';
 
 export class JSONLogger extends Logger {
     private readonly defaultOptions: IJSONLoggerOptions = {
-        useDefaultFields: true
+        useDefaultFields: true,
+        prefix: undefined,
+        isPrefixRaw: false
     };
     private readonly options: IJSONLoggerOptions;
     public constructor(options?: Partial<IJSONLoggerOptions>) {
@@ -32,10 +34,23 @@ export class JSONLogger extends Logger {
             };
         }
 
+        this.applyPrefixIfNeeded(input);
+
         return jsonStringifySafe(input);
+    }
+    private applyPrefixIfNeeded(input: any) {
+        if (input.m && typeof input.m === 'string') {
+            const prefix =
+                this.options.isPrefixRaw ?
+                    this.options.prefix :
+                    `[${this.options.prefix}] `;
+            input.m = `${prefix}${input.m}`;
+        }
     }
 }
 
 export interface IJSONLoggerOptions {
     useDefaultFields?: boolean;
+    prefix?: string;
+    isPrefixRaw?: boolean;
 }
