@@ -40,10 +40,16 @@ export class JSONLogger extends Logger {
     }
     private applyPrefixIfNeeded(input: any) {
         if (input.m && typeof input.m === 'string') {
-            const prefix =
-                this.options.isPrefixRaw ?
-                    this.options.prefix :
-                    `[${this.options.prefix}] `;
+            let prefix = '';
+
+            if (this.options.prefix) {
+                if (this.options.isPrefixRaw) {
+                    prefix = this.options.prefix;
+                } else {
+                    prefix = `[${this.options.prefix}] `;
+                }
+            }
+
             input.m = `${prefix}${input.m}`;
         }
     }
