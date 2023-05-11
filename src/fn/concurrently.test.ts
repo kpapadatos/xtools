@@ -40,4 +40,11 @@ describe('concurrently', () => {
 
         expect(await result).length(3);
     });
+    it('should be able to catch error', async () => {
+        await concurrently([async () => {
+            await sleep(50);
+            throw new Error('test');
+        }], { concurrency: 1 })
+            .catch(e => expect(e.message).eq('test'));
+    });
 });
