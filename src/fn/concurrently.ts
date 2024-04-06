@@ -1,12 +1,9 @@
 import { ITaskManagerOptions, TaskFn, TaskManager } from './TaskManager';
 
-export async function concurrently<T>(tasks: TaskFn<T>[], options: ITaskManagerOptions) {
+export function concurrently<T>(tasks: TaskFn<T>[], options: ITaskManagerOptions) {
     const taskManager = new TaskManager(options);
-    const taskPromises: Promise<T>[] = [];
 
-    for (const task of tasks) {
-        taskPromises.push(taskManager.enqueue(task));
-    }
+    tasks.map(task => taskManager.enqueue(task));
 
-    return await Promise.all(taskPromises);
+    return taskManager.waitUntilIdle();
 }

@@ -48,6 +48,6 @@ class WithTimeout<T> {
                 this.deferred.reject(timeoutError);
                 this.deferred.isFinished = true;
             }
-        }, this.options.timeoutMs);
+        }, this.options.timeoutMs) as any;
     }
 }

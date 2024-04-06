@@ -4,13 +4,18 @@ export class TaskManager {
     private readonly taskBuffer: ITaskHandle[] = [];
     private readonly inFlightTaskBuffer: ITaskHandle[] = [];
     public constructor(private options: ITaskManagerOptions) { }
-    public async enqueue<T>(taskFn: TaskFn<T>) {
+    public enqueue<T>(taskFn: TaskFn<T>) {
         const handle = this.createTaskHandle(taskFn);
         this.taskBuffer.push(handle);
 
         this.processTaskBuffer();
 
-        return await handle.deferred.promise;
+        return handle.deferred.promise;
+    }
+    public async waitUntilIdle() {
+        while (this.inFlightTaskBuffer.length) {
+            await this.waitUntilNextTaskCompletes();
+        }
     }
     private processTaskBuffer() {
         while (this.hasPendingTasks() && this.hasConcurrencySlot()) {
@@ -31,16 +36,26 @@ export class TaskManager {
     private hasConcurrencySlot() {
         return Boolean(this.inFlightTaskBuffer.length < this.options.concurrency);
     }
-    private async waitUntilNextTaskCompletes() {
-        await Promise.race(this.inFlightTaskBuffer.map(task => task.deferred.promise));
+    private waitUntilNextTaskCompletes() {
+        return Promise.race(this.inFlightTaskBuffer.map(task => task.deferred.promise.catch(() => { })));
     }
-    private async invoke(handle: ITaskHandle) {
+    private invoke(handle: ITaskHandle) {
         this.inFlightTaskBuffer.push(handle);
 
         try {
-            handle.deferred.resolve(await handle.taskFn());
-        } catch (e) {
-            handle.deferred.reject(e);
+            const result = handle.taskFn();
+
+            if (result instanceof Promise) {
+                result
+                    .then(
+                        value => handle.deferred.resolve(value),
+                        error => handle.deferred.reject(error)
+                    );
+            } else {
+                handle.deferred.resolve(result);
+            }
+        } catch (error) {
+            handle.deferred.reject(error);
         }
     }
     private createTaskHandle<T>(taskFn: TaskFn<T>) {

@@ -1,6 +1,6 @@
 {
   "name": "@lunarade/xtools",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,20 +8,19 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "npm run build && mocha -r source-map-support/register --timeout 50000 dist/**/*.test.js",
+    "test": "npm run build && mocha -r source-map-support/register --timeout 1000 dist/**/*.test.js",
     "test-w": "concurrently npm:watch npm:mocha-w",
-    "mocha-w": "mocha -r source-map-support/register --timeout 50000 --watch --watch-files dist/**/*.js dist/**/*.js",
+    "mocha-w": "mocha -r source-map-support/register --timeout 1000 --watch --watch-files dist/**/*.js dist/**/*.js",
     "prepublish": "npm run build"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "typescript": "^4.9.4"
-  },
   "devDependencies": {
+    "typescript": "^5.4.4",
     "@angular-eslint/eslint-plugin": "^15.1.0",
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.1",
+    "@types/node": "^20.12.5",
     "@typescript-eslint/eslint-plugin": "^5.47.0",
     "@typescript-eslint/parser": "^5.47.0",
     "chai": "^4.3.7",
