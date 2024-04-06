@@ -12,11 +12,6 @@ export class TaskManager {
 
         return handle.deferred.promise;
     }
-    public async waitUntilIdle() {
-        while (this.inFlightTaskBuffer.length) {
-            await this.waitUntilNextTaskCompletes();
-        }
-    }
     private processTaskBuffer() {
         while (this.hasPendingTasks() && this.hasConcurrencySlot()) {
             const handle = this.taskBuffer.shift()!;
@@ -40,6 +35,11 @@ export class TaskManager {
         return Promise.race(this.inFlightTaskBuffer.map(task => task.deferred.promise.catch(() => { })));
     }
     private invoke(handle: ITaskHandle) {
+        const after = () => {
+            const index = this.inFlightTaskBuffer.indexOf(handle);
+            this.inFlightTaskBuffer.splice(index, 1);
+        };
+
         this.inFlightTaskBuffer.push(handle);
 
         try {
@@ -50,12 +50,15 @@ export class TaskManager {
                     .then(
                         value => handle.deferred.resolve(value),
                         error => handle.deferred.reject(error)
-                    );
+                    )
+                    .finally(after);
             } else {
                 handle.deferred.resolve(result);
+                after();
             }
         } catch (error) {
             handle.deferred.reject(error);
+            after();
         }
     }
     private createTaskHandle<T>(taskFn: TaskFn<T>) {
@@ -65,12 +68,6 @@ export class TaskManager {
             taskFn,
             deferred
         };
-
-        handle.deferred.promise
-            .finally(() => {
-                const index = this.inFlightTaskBuffer.indexOf(handle);
-                this.inFlightTaskBuffer.splice(index, 1);
-            });
 
         return handle;
     }
